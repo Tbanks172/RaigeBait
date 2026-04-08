@@ -1,0 +1,20 @@
+{
+  "name": "raigebait",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"],
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": ["lib/**/*.js"]
+  }
+}

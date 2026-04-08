@@ -653,6 +653,7 @@ border-radius:8px;transition:color .15s;
   </div>
 </div>
 
+<script src="lib/game-logic.js"></script>
 <script>
 // ═══════════════════════════════════════
 // CAT CONFIG
@@ -957,43 +958,11 @@ function pickCat(btn){
   btn.classList.add('sel'); cat=btn.dataset.cat||'all';
 }
 
-function buildDeck(){
-  let src;
-  if(mode==='rage') src = cat==='all' ? RC.filter(c=>c.c!==5) : RC.filter(c=>String(c.c)===cat);
-  else if(mode==='tf') src=[...TF];
-  else if(mode==='wml') src=[...WML];
-  else src=[...WYR];
-  // Sort: free cards first, then non-free — keeps free preview at the front
-  const free = src.filter(c=>c.f===1);
-  const paid = src.filter(c=>!c.f);
-  return [...shuf(free), ...shuf(paid)];
-}
-function shuf(a){
-  const b=[...a];
-  for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}
-  return b;
-}
-
-function catKey(card){
-  // unique key per category within a session
-  if(card.t==='r') return 'r'+card.c;
-  return card.t;
-}
-
-function isLocked(card){
-  if(card.lk) return true; // ultimate rage always locked for free
-  if(card.f) return false; // explicitly free
-  // locked if we've already shown FREE_PER_CAT free cards for this category
-  const key = catKey(card);
-  return (freeShown[key]||0) >= FREE_PER_CAT;
-}
-
-function markSeen(card){
-  if(card.f && !isLocked(card)){
-    const key = catKey(card);
-    freeShown[key] = Math.min((freeShown[key]||0)+1, FREE_PER_CAT);
-  }
-}
+function buildDeck(){ return GameLogic.buildDeck(mode, cat, {RC,TF,WML,WYR}, {excludeUltimate:true}); }
+function shuf(a){ return GameLogic.shuf(a); }
+function catKey(card){ return GameLogic.catKey(card); }
+function isLocked(card){ return GameLogic.isLocked(card, freeShown, FREE_PER_CAT); }
+function markSeen(card){ return GameLogic.markSeen(card, freeShown, FREE_PER_CAT); }
 
 function startGame(){
   deck=buildDeck(); idx=0; flipped=false;
